@@ -46,4 +46,12 @@ impl Cell {
     pub fn set_state(&mut self, new_state: CellState) {
         self.state = new_state;
     }
+
+    pub fn draw_cell(&self, context:  &web_sys::CanvasRenderingContext2d) -> Result<(), JsValue>{
+        context.begin_path();
+        context.rect(0.0, 0.0, 10.0, 10.0);
+        context.set_fill_style(&JsValue::from("green"));
+        context.fill();
+        Ok(())
+    }
 }

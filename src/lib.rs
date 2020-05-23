@@ -15,7 +15,7 @@ pub fn start() -> Result<(), JsValue> {
 
     let universe = Universe::new(500, 500);
     universe.fill_background();
-    universe.height();
+    universe.draw_cells();
 
 
 

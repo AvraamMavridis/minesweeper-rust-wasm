@@ -71,6 +71,13 @@ impl Universe {
         Ok(())
     }
 
+    pub fn draw_cells(&self) -> Result<(), JsValue> {
+        for cell in &self.cells {
+            cell.draw_cell(&self.context);
+        }
+        Ok(())
+    }
+
     pub fn get_cells(&self) -> *const Cell {
          self.cells.as_ptr()
     }
