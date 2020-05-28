@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum CellState {
     Number,
     Bomb,
@@ -15,6 +15,7 @@ pub struct Cell {
     size: (u32, u32),
     state: CellState,
     hidden: bool,
+    neighoured_mines: u32,
 }
 
 impl Cell {
@@ -24,6 +25,7 @@ impl Cell {
             size,
             state,
             hidden: true,
+            neighoured_mines: 0,
         }
     }
 
@@ -33,6 +35,10 @@ impl Cell {
 
     pub fn size(&self) -> &(u32, u32) {
         &self.size
+    }
+
+    pub fn get_state(&self) -> &CellState {
+        &self.state
     }
 
     pub fn hidden(&self) -> bool {
@@ -47,11 +53,45 @@ impl Cell {
         self.state = new_state;
     }
 
-    pub fn draw_cell(&self, context:  &web_sys::CanvasRenderingContext2d) -> Result<(), JsValue>{
+    pub fn set_neighboured_mines(&mut self, n: u32) -> () {
+        self.neighoured_mines = n;
+    }
+
+    pub fn get_neighboured_mines(&self) -> u32 {
+        self.neighoured_mines
+    }
+
+    pub fn is_bomb(&self) -> bool {
+        match self.state {
+            CellState::Bomb => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        match self.state {
+            CellState::Empty => true,
+            _ => false,
+        }
+    }
+
+    pub fn draw_cell(&self, context: &web_sys::CanvasRenderingContext2d) -> () {
         context.begin_path();
-        context.rect(0.0, 0.0, 10.0, 10.0);
-        context.set_fill_style(&JsValue::from("green"));
+        context.rect(self.position.0 as f64, self.position.1 as f64, self.size.0 as f64, self.size.1 as f64);
+
+        let color = match self.state {
+            CellState::Bomb => JsValue::from("black"),
+            _ => JsValue::from("red")
+        };
+
+        context.set_fill_style(&color);
         context.fill();
-        Ok(())
+        context.set_stroke_style(&JsValue::from("black"));
+        context.stroke();
+
+        context.set_font("15px Georgia");
+        context.set_fill_style(&JsValue::from("black"));
+        context.fill_text(&self.neighoured_mines.to_string(), (self.position.0 + 15) as f64, (self.position.1 + 25) as f64)
+        ;
     }
 }
